@@ -1,0 +1,4 @@
+# requirements.txt
+google.genai
+python-dotenv
+rich
