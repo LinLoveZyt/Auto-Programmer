@@ -1,0 +1,53 @@
+#prompts/code_modification.txt
+#这是一个用于让LLM在现有代码基础上生成修改指令的统一模板。
+
+--- 上下文信息 ---
+
+1. 项目全局信息:
+{project_definition_json}
+
+2. 架构知识库 (项目的长期记忆和决策，请遵循其中的设计原则):
+{architecture_notes}
+
+3. 之前已成功完成的步骤历史摘要:
+{previous_steps_summary_json}
+
+4. 上一个成功步骤 (Step-{last_successful_step_number}) 的完整代码:
+{last_step_code_json}
+
+
+5. 当前步骤 (Step-{step_number}) 的任务目标与描述:
+{step_description_json}
+
+6. 来自之前失败尝试的反馈 (如果有):
+{feedback_section}
+
+--- 你的任务 ---
+
+请基于以上【所有上下文信息】，生成一份详细、精确、结构化的代码修改指令来完成【当前步骤的任务目标】。
+
+**重要技术指南:**
+* **接口兼容性**: 修改现有文件时，请尽量保持向后兼容性，除非任务目标明确要求重构。
+* **指令精确性**: 请优先使用 `line_diff` 进行小范围、精确的修改。
+
+**输出格式要求:**
+你的回复必须是一个**严格有效**的JSON对象。在顶层，必须包含以下键：
+
+"modifications": (数组) 一个包含所有修改指令的数组。
+"dependency_file": (字符串, 可选) 如果修改了依赖文件，请指明文件名。
+"main_executable": (字符串) 主执行脚本的路径。
+"usage_guide": (对象) 一个包含 "description" 和 "command" 的对象。
+"tests_to_run": (字符串数组, 可选) 列出为验证此步骤而需要运行的测试文件或目录。
+
+**修改指令(modifications)的详细格式:**
+数组中的每个指令对象必须包含 "type", "path", 以及根据类型所需的内容。
+- 如果 type 是 "replace_file" 或 "new_file", 对象还需包含: "content" (字符串)。
+  - **【【！！！绝对重要的规则！！！】】**
+  - `"content"` 字段的值**必须**是一个**有效的 JSON 字符串**。
+  - 这意味着**所有多行代码都必须被合并为一行**，并使用 `\n` 来表示换行符。
+  - 字符串中所有的双引号 `"` 必须被转义为 `\"`。
+  - **严禁**在 JSON 结构中使用 Python 的三引号 `"""`。
+- 如果 type 是 "line_diff", 对象还需包含: "diffs": (数组) 包含 "start_line", "end_line", "new_content" 的对象数组。
+- 如果 type 是 "delete_file", 则不需要额外键。
+
+请确保你的输出是严格的JSON格式，回复我中文。

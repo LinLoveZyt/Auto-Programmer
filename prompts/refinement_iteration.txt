@@ -1,0 +1,7 @@
+// prompts/refinement_iteration.txt
+这是当前的项目描述JSON：
+{previous_description_json}
+
+用户对当前描述的反馈是："{user_feedback}"
+
+请根据用户的反馈修改项目描述。你的回复必须是更新后的完整项目描述，仍然是严格的JSON格式，并保持原有键结构。回复中文。

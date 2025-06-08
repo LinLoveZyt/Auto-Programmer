@@ -1,0 +1,40 @@
+// prompts/code_generation_step1.txt
+项目全局信息：
+{project_definition_json}
+
+架构知识库 (项目的长期记忆和决策，请遵循其中的设计原则):
+{architecture_notes}
+
+当前是项目的第一步（Step-1）。
+Step-1 任务目标与描述：
+{step_description_json}
+
+{feedback_section}
+
+请为Step-1生成一个结构良好、可扩展的Python项目。
+你需要规划出项目的初始文件和目录结构，并提供所有必要文件的完整内容。
+
+**重要技术指南:**
+* **项目结构**: 应创建合理的子目录（如 'src', 'tests'）来组织代码。
+* **包名与导入名**: 请务必确认你使用的 `import` 语句是正确的，而不是直接使用 `requirements.txt` 中的包名。
+* **代码简洁性**: 在第一步，请生成最简单、最核心的可运行代码和对应的基础测试。目标是验证环境、依赖、基本结构和测试框架是否正确。
+
+**输出格式要求:**
+你的回复必须是一个**严格有效**的JSON对象，包含以下几个键：
+1.  `"files"`: 其值为一个JSON数组。每个文件对象应包含 `"path"` (字符串) 和 `"content"` (字符串)。
+    - **【【！！！绝对重要的规则！！！】】**
+    - `"content"` 字段的值**必须**是一个**有效的 JSON 字符串**。
+    - 这意味着**所有多行代码都必须被合并为一行**，并使用 `\n` 来表示换行符。
+    - 字符串中所有的双引号 `"` 必须被转义为 `\"`。
+    - **严禁**在 JSON 结构中使用 Python 的三引号 `"""`。
+    - **正确示例**: `"content": "import os\n\n# 这是一个注释\ndef main():\n    print(\"Hello World\")"`
+    - **错误示例**: `"content": """import os"""`
+2.  `"dependency_file"`: (字符串, 可选) 通常是 "requirements.txt"。
+3.  `"main_executable"`: (字符串, 主执行脚本的路径, 例如 "main.py")
+4.  `"usage_guide"`: 其值为一个JSON对象，包含 `"description"` 和 `"command"`。
+5.  `"tests_to_run"`: (字符串数组, 可选) 列出为验证此步骤而需要运行的测试文件或目录。
+
+如果项目需要特定的Python库，请务必在一个依赖关系文件（推荐命名为 `requirements.txt`）中列出它们。
+生成的代码应专注于完成Step-1的任务目标，保持简单和可执行。
+
+确保你的输出是严格的JSON格式，回复我中文。

@@ -1,0 +1,25 @@
+// prompts/initial_refinement.txt
+用户的初步项目构想是："{user_idea}"。
+
+在进一步沟通后，用户对AI提出的问题提供了如下补充信息：
+--- 用户补充信息 ---
+{user_answers}
+--- 补充信息结束 ---
+
+作为一名务实的软件架构师，请你结合用户的【初步构想】和【补充信息】，生成一份具体、可行的Python项目技术方案。
+
+目前阶段，我们不需要具体的代码实现或文件结构，请将注意力集中在高层次的规划上。
+
+你的回复必须是一个结构化的JSON对象，包含以下键：
+- "project_name": (字符串，根据项目内容建议的项目名称，使用小写字母和下划线)
+- "project_goal": (字符串，对项目核心目标的精准概括)
+- "main_components": (一个对象数组，每个对象包含以下键):
+  - "component_name": (字符串, 构成项目的主要功能模块或类的名称, 例如 "web_scraper", "data_parser")
+  - "description": (字符串, 清晰地解释这个组件的责任、核心功能以及它如何与其他组件交互)
+- "third_party_libraries": (一个对象数组, **仅包含需要通过 pip 安装的第三方库**，每个对象包含):
+  - "library_name": (字符串, 库的名称，例如 "requests", "beautifulsoup4")
+  - "justification": (字符串, 简要说明为什么选择这个库来实现特定功能)
+- "standard_libraries_used": (字符串列表，**仅包含项目中会用到的 Python 标准库**，例如 ["sqlite3", "threading", "json"])
+- "main_workflow": (字符串，对项目主要执行流程的详细分步描述，说明数据如何流动以及各组件如何按顺序工作)
+
+确保你的输出是严格的JSON格式，并以中文回复。

@@ -1,0 +1,71 @@
+// prompts/task_decomposition.txt
+这是已确认的项目描述：
+{confirmed_project_description_json}
+
+请你扮演一位资深的、注重“测试驱动开发”(TDD) 的技术项目经理。你的任务是根据这个已确认的项目描述，将其分解为一系列逻辑清晰、增量式、可执行的开发步骤。
+
+**核心要求:**
+1.  **基于依赖图的分解**:
+    * 将整个项目看作一个有向无环图 (DAG)，其中每个节点是一个独立的开发任务。
+    * 每个任务都必须有一个`dependencies`字段，这是一个数组，列出了它所依赖的其他任务的`step_number`。
+    * 如果一个任务不依赖任何其他任务，其`dependencies`数组应为空 (`[]`)。这些是项目的起点。
+
+2.  **明确的产出与测试驱动的步骤类型**:
+    * **步骤类型 (`step_type`)**: 每个步骤必须有一个类型。
+        * `"feature_development"`: 用于实现新功能。**重要**: 对于此类型，你必须同时产出实现代码和相应的单元测试代码（例如，在 `tests/` 目录下）。
+        * `"refactoring"`: 用于优化现有代码结构，但**不引入任何新功能**。重构后，必须通过运行之前的相关测试来确保功能未被破坏。
+        * `"integration_test"`: 在多个功能模块开发完成后，专门用于测试模块间的交互是否正确。
+    * **起始任务 (dependencies: [])** 必须是项目的“最小可行骨架”。它应该建立起核心的文件结构（包括 `src` 和 `tests` 目录），创建一个包含所有第三方依赖（**必须包括 `pytest`**）的 `requirements.txt` 文件，并实现一个可以运行并验证项目设置正确的简单入口点和**一个可以通过的简单单元测试**。
+    * **后续步骤必须增量开发**。每个步骤的描述都应清晰地说明它在前序依赖的基础上“新增”或“修改”了什么。
+    * **依赖管理**: `requirements.txt` **只能包含需要 `pip` 安装的第三方库**。
+
+3.  **聚焦核心功能**:
+    * 分解任务时，请专注于核心业务逻辑的实现。避免规划CI/CD或部署等步骤。
+    * 避免在一个步骤中只做微小的改动。每个步骤都应代表一个有意义的进展。
+
+**输出格式要求:**
+你的回复必须是一个JSON对象，包含一个名为 "steps" 的键，其值为一个JSON数组。
+数组中的每个元素都是一个步骤对象，应包含以下键：
+- "step_number": (整数，从1开始的唯一步骤编号)
+- "step_title": (字符串，该步骤的简短标题)
+- "step_type": (字符串, 必须是 "feature_development", "refactoring", "integration_test" 之一)
+- "step_description": (字符串，该步骤的详细描述)
+- "deliverables": (字符串列表，该步骤应产出的**所有文件名**，包括代码文件和测试文件)
+- "dependencies": (整数数组，列出此步骤所依赖的所有`step_number`。如果无依赖，则为空数组`[]`)
+- "tests_to_run": (字符串数组, 列出**为验证此步骤而需要运行的测试文件或目录**，例如 `["tests/test_parser.py"]`)
+
+**示例JSON结构:**
+```json
+{{
+  "steps": [
+    {{
+      "step_number": 1,
+      "step_title": "项目初始化和Web服务器骨架",
+      "step_type": "feature_development",
+      "step_description": "创建项目基本目录结构，包括`src`和`tests`目录。设置Flask应用，并创建一个返回 'Hello World' 的根路由。创建一个包含 `Flask` 和 `pytest` 的 `requirements.txt`。同时，在`tests/`下创建一个简单的测试 `tests/test_app.py`，断言根路由返回200状态码。",
+      "deliverables": ["src/main.py", "requirements.txt", "tests/test_app.py"],
+      "dependencies": [],
+      "tests_to_run": ["tests/test_app.py"]
+    }},
+    {{
+      "step_number": 2,
+      "step_title": "实现用户认证模块",
+      "step_type": "feature_development",
+      "step_description": "在`src`下创建`auth.py`，实现用户注册和登录的基本逻辑（内存存储）。同时，在 `tests/` 下创建 `tests/test_auth.py` 来测试注册和登录功能。",
+      "deliverables": ["src/auth.py", "tests/test_auth.py"],
+      "dependencies": [1],
+      "tests_to_run": ["tests/test_auth.py"]
+    }},
+    {{
+      "step_number": 3,
+      "step_title": "集成测试：认证与主应用",
+      "step_type": "integration_test",
+      "step_description": "修改 `src/main.py` 以集成 `auth.py` 中的蓝图。修改 `tests/test_app.py` 来测试受保护的路由，确保未登录用户无法访问，登录后可以访问。",
+      "deliverables": ["src/main.py", "tests/test_app.py"],
+      "dependencies": [2],
+      "tests_to_run": ["tests/test_app.py"]
+    }}
+  ]
+}}
+
+请确保你的输出是严格的JSON格式，并以中文回复。

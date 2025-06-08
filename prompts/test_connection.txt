@@ -1,0 +1,5 @@
+# prompts/test_connection.txt
+# 这是一个用于测试与LLM连接的简单Prompt模板。
+
+你好，LLM！我正在测试与你的连接，请回复中文。
+请回复“连接成功，收到消息：{user_message}”。
